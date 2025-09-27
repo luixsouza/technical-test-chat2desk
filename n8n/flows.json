@@ -1,0 +1,352 @@
+{
+  "name": "technical-test-chat2desk-message-api",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "api/auth/login",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "1fdcd27e-db61-4bfb-9b33-cdce90b2576c",
+      "name": "Webhook Login",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [-16, 240],
+      "webhookId": "9ad69908-de79-4791-8dfb-0a81589c87ee",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "functionCode": "const jwt = require('jsonwebtoken');\n\n// Pega input do Webhook\nconst input = $json[0] || $items()[0].json;\nconst { username, password } = input.body || input;\n\n// 1. Validação de campos\nif (!username || !password) {\n  return [{\n    json: {\n      type: \"https://example.com/probs/invalid-input\",\n      title: \"Invalid input\",\n      status: 400,\n      detail: \"username and password required\",\n      instance: \"/api/auth/login\"\n    }\n  }];\n}\n\n// 2. Usuário dummy\nconst DUMMY_USER = \"candidate\";\nconst DUMMY_PASS = \"secret\";\n\nif (username !== DUMMY_USER || password !== DUMMY_PASS) {\n  return [{\n    json: {\n      type: \"https://example.com/probs/invalid-input\",\n      title: \"Invalid credentials\",\n      status: 401,\n      detail: \"Username or password is incorrect\",\n      instance: \"/api/auth/login\"\n    }\n  }];\n}\n\n// 3. Criar JWT\nconst token = jwt.sign(\n  { username },\n  process.env.JWT_SECRET || 'minha_chave_teste',\n  { expiresIn: 3600 }\n);\n\n// 4. Retornar JSON para Postman\nreturn [{\n  json: {\n    accessToken: token,\n    tokenType: \"Bearer\",\n    expiresIn: 3600\n  }\n}];\n"
+      },
+      "id": "f2b64abd-3034-45a4-9633-22fbb297a053",
+      "name": "Login Function (JWT)",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [288, 240]
+    },
+    {
+      "parameters": {
+        "path": "messages",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "4f25fad7-1acd-40b4-9896-186b6d5aec1c",
+      "name": "Webhook GET Messages",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [-32, 672],
+      "webhookId": "c4120fcd-4f80-4771-b6f6-8a66ba40366d"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "messages"
+      },
+      "id": "d290174a-3afc-4734-a1c2-2bf5ee918fe0",
+      "name": "Supabase Select Messages",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [288, 672],
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "5OXfzD0Bko6NlwnP",
+          "name": "SUPABASE_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "messages",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "d5a75cee-97ff-4b16-afd1-e75e81ba2371",
+      "name": "Webhook POST Message",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [-16, 464],
+      "webhookId": "6904fd31-4130-4a2d-bd2a-5fa8c0d0940d"
+    },
+    {
+      "parameters": {
+        "tableId": "messages",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "title",
+              "fieldValue": "={{$json[\"body\"][\"title\"]}}"
+            },
+            {
+              "fieldId": "body",
+              "fieldValue": "={{$json[\"body\"][\"body\"]}}"
+            },
+            {
+              "fieldId": "author",
+              "fieldValue": "={{$json[\"body\"][\"author\"]}}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "={{$json[\"body\"][\"status\"]}}"
+            }
+          ]
+        }
+      },
+      "id": "681098b6-12b9-4f29-b6df-b66192c475cd",
+      "name": "Supabase Insert Message",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [288, 464],
+      "alwaysOutputData": true,
+      "executeOnce": false,
+      "retryOnFail": false,
+      "credentials": {
+        "supabaseApi": {
+          "id": "5OXfzD0Bko6NlwnP",
+          "name": "SUPABASE_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "messages/:id",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "efb0aef5-c495-46aa-8ddd-39e3c0039399",
+      "name": "Webhook GET Message by ID",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [-16, 880],
+      "webhookId": "e8b452ab-d339-48be-9700-56e77fa619db"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "messages",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "=={{ $json[\"id\"] }}"
+            }
+          ]
+        }
+      },
+      "id": "d1efb7f8-28d0-4f5a-9dc0-63aab4385da9",
+      "name": "Supabase Get by ID",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [288, 880],
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "5OXfzD0Bko6NlwnP",
+          "name": "SUPABASE_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "PUT",
+        "path": "messages/:id",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "4064c2e8-7b8b-4916-8402-15db6e5bc72d",
+      "name": "Webhook PUT Message",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [-16, 1088],
+      "webhookId": "3621eaf5-1083-4274-bc9f-21599eecab9e"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "messages"
+      },
+      "id": "9aadcb2d-ba19-4d88-b47c-28f67ce43a88",
+      "name": "Supabase Update Message",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [288, 1088],
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "5OXfzD0Bko6NlwnP",
+          "name": "SUPABASE_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "PATCH",
+        "path": "messages/:id",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "a77bd9d6-5bf1-4596-b3dd-9082bba9baa9",
+      "name": "Webhook PATCH Message",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [-16, 1312],
+      "webhookId": "d0266a07-bc1f-4dbf-a934-0c8e79601bd9"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "messages"
+      },
+      "id": "8be7d02d-d115-4c54-87f0-21370f212b75",
+      "name": "Supabase Patch Message",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [288, 1312],
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "5OXfzD0Bko6NlwnP",
+          "name": "SUPABASE_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "DELETE",
+        "path": "messages/:id",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "9cb4acf3-10c3-459e-8eb2-aedd54b9c537",
+      "name": "Webhook DELETE Message",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [-16, 1520],
+      "webhookId": "4517e62a-2edd-42db-8f73-3f5bc20f3773"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "tableId": "messages"
+      },
+      "id": "157be38e-be42-4b1c-a5c1-cd918c795a35",
+      "name": "Supabase Delete Message",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [288, 1520],
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "5OXfzD0Bko6NlwnP",
+          "name": "SUPABASE_CREDENTIAL"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook Login": {
+      "main": [
+        [
+          {
+            "node": "Login Function (JWT)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook GET Messages": {
+      "main": [
+        [
+          {
+            "node": "Supabase Select Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Select Messages": {
+      "main": [[]]
+    },
+    "Webhook POST Message": {
+      "main": [
+        [
+          {
+            "node": "Supabase Insert Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Insert Message": {
+      "main": [[]]
+    },
+    "Webhook GET Message by ID": {
+      "main": [
+        [
+          {
+            "node": "Supabase Get by ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook PUT Message": {
+      "main": [
+        [
+          {
+            "node": "Supabase Update Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook PATCH Message": {
+      "main": [
+        [
+          {
+            "node": "Supabase Patch Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook DELETE Message": {
+      "main": [
+        [
+          {
+            "node": "Supabase Delete Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Delete Message": {
+      "main": [[]]
+    },
+    "Login Function (JWT)": {
+      "main": [[]]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b1fe3b11-32c5-4243-9196-24cf0940a1c3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "24d5320d6ebea0f766ddf505df90048fc45580e434d2c8eade301e547978084d"
+  },
+  "id": "qlo1kCqbUwGHHOoK",
+  "tags": []
+}

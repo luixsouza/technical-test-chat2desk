@@ -9,9 +9,14 @@ services:
       - "5678:5678"
     env_file:
       - .env
+    environment:
+      - GENERIC_TIMEZONE=America/Sao_Paulo
+      - N8N_PORT=5678
+      - N8N_HOST=localhost
+      - N8N_PROTOCOL=http
+      - NODE_FUNCTION_ALLOW_EXTERNAL=jsonwebtoken,zod
     volumes:
       - n8n_data:/home/node/.n8n
-    user: node
 
 volumes:
   n8n_data:
