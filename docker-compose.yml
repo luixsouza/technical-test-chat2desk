@@ -17,6 +17,23 @@ services:
       - NODE_FUNCTION_ALLOW_EXTERNAL=jsonwebtoken,zod
     volumes:
       - n8n_data:/home/node/.n8n
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend_crud_app
+    ports:
+      - "3000:80"
+    depends_on:
+      - n8n
+    networks:
+      - app-network
 
 volumes:
   n8n_data:
+
+networks:
+  app-network:
+    driver: bridge
