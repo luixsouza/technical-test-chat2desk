@@ -1,15 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getMessages, deleteMessage } from "../api/client";
-
-interface Message {
-  id: string;
-  title: string;
-  body: string;
-  author: string;
-  status: string;
-  created_at?: string;
-}
+import { getMessages, deleteMessage, type Message } from "../api/client";
 
 const MessagesListPage = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -25,14 +16,7 @@ const MessagesListPage = () => {
     setLoading(true);
     try {
       const data = await getMessages();
-      if (Array.isArray(data)) {
-        setMessages(data);
-      } else if (data && typeof data === "object") {
-        setMessages([data]);
-      } else {
-        setMessages([]);
-        setError("Resposta inesperada da API");
-      }
+      setMessages(Array.isArray(data) ? data : []);
     } catch (e) {
       setError("Erro ao buscar mensagens");
       setMessages([]);
@@ -81,7 +65,7 @@ const MessagesListPage = () => {
             {error}
           </div>
         )}
-        {!Array.isArray(messages) || messages.length === 0 ? (
+        {messages.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-gray-400 text-xl font-medium">
               Nenhuma mensagem encontrada.

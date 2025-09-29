@@ -1,8 +1,33 @@
 import axios from "axios";
 
+// Tipos básicos usados pelo frontend
+export interface Message {
+  id: string;
+  title: string;
+  body: string;
+  author: string;
+  status: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
 const api = axios.create({
   baseURL: "http://localhost:5678/webhook",
 });
+
+// Alguns webhooks do n8n retornam objetos no formato { json: {...}, pairedItem: {...} }
+// Este helper "desembrulha" esse formato tanto para arrays quanto para objetos únicos
+const unwrapN8n = <T = unknown>(data: any): T | T[] => {
+  if (Array.isArray(data)) {
+    return data.map((item) =>
+      item && typeof item === "object" && "json" in item ? item.json : item
+    ) as T[];
+  }
+  if (data && typeof data === "object" && "json" in data) {
+    return (data.json as T) ?? (data as T);
+  }
+  return data as T;
+};
 
 // LOGIN
 export const loginUser = async (credentials: {
@@ -14,20 +39,21 @@ export const loginUser = async (credentials: {
 };
 
 // LISTAR MENSAGENS
-export const getMessages = async () => {
+export const getMessages = async (): Promise<Message[]> => {
   const response = await api.get("/messages");
-  const data = response.data;
-  if (Array.isArray(data)) return data;
-  if (data && typeof data === "object") return [data];
+  const unwrapped = unwrapN8n<Message>(response.data);
+  if (Array.isArray(unwrapped)) return unwrapped;
+  if (unwrapped && typeof unwrapped === "object") return [unwrapped as Message];
   return [];
 };
 
 // BUSCAR POR ID
-export const getMessageById = async (id: string) => {
+export const getMessageById = async (id: string): Promise<Message> => {
   const response = await api.get(
     `/e8b452ab-d339-48be-9700-56e77fa619db/api/messages/${id}`
   );
-  return response.data;
+  const unwrapped = unwrapN8n<Message>(response.data);
+  return (Array.isArray(unwrapped) ? unwrapped[0] : unwrapped) as Message;
 };
 
 // CRIAR

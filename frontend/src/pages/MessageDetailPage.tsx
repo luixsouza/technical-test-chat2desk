@@ -1,15 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { getMessageById } from "../api/client";
-
-interface Message {
-  id: string;
-  title: string;
-  body: string;
-  author: string;
-  status: string;
-  created_at?: string;
-}
+import { getMessageById, type Message } from "../api/client";
 
 const MessageDetailPage = () => {
   const { id } = useParams<{ id: string }>();
