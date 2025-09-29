@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getMessages, deleteMessage, type Message } from "../api/client";
 
 const MessagesListPage = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchMessages();
@@ -35,6 +36,11 @@ const MessagesListPage = () => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+    navigate("/login");
+  };
+
   if (loading) return <div className="text-center mt-10">Carregando...</div>;
 
   return (
@@ -51,7 +57,13 @@ const MessagesListPage = () => {
           <h1 className="justify-self-center text-center text-4xl sm:text-5xl font-black text-brand-700 tracking-tight">
             Painel de Mensagens
           </h1>
-          <div className="justify-self-end">
+          <div className="justify-self-end flex items-center gap-3">
+            <button
+              onClick={handleLogout}
+              className="bg-red-50 hover:bg-red-100 text-red-700 px-4 py-2 rounded-lg font-bold text-sm transition-all border border-red-200 shadow-sm"
+            >
+              Sair
+            </button>
             <Link
               to="/messages/new"
               className="bg-brand-600 hover:bg-brand-700 text-white px-6 py-3 rounded-xl font-bold shadow-md transition-all text-lg"

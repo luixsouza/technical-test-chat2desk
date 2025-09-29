@@ -15,6 +15,30 @@ const api = axios.create({
     (import.meta as any)?.env?.VITE_API_BASE || "http://localhost:5678/webhook",
 });
 
+// Interceptor para adicionar token de autorização
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("authToken");
+  if (token && token.trim() !== "") {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Interceptor para lidar com respostas de erro
+api.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token inválido ou expirado
+      localStorage.removeItem("authToken");
+      window.location.href = "/login";
+    }
+    return Promise.reject(error);
+  }
+);
+
 const unwrapN8n = <T = unknown>(data: any): T | T[] => {
   if (Array.isArray(data)) {
     return data.map((item) =>
@@ -32,7 +56,7 @@ export const loginUser = async (credentials: {
   username: string;
   password: string;
 }) => {
-  const response = await api.post("/login", credentials);
+  const response = await api.post("/api/auth/login", credentials);
   return response.data;
 };
 
