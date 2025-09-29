@@ -33,12 +33,12 @@ const MessageDetailPage = () => {
     return <div className="text-center mt-10">Mensagem não encontrada.</div>;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 py-8">
-      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-lg">
-        <h2 className="text-2xl font-bold mb-4 text-gray-800">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-50 to-white py-8 px-4">
+      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-lg border border-gray-100">
+        <h2 className="text-3xl font-extrabold mb-4 text-gray-900 text-center">
           {message.title}
         </h2>
-        <p className="mb-4 text-gray-700">{message.body}</p>
+        <p className="mb-6 text-gray-700 text-center">{message.body}</p>
         <div className="space-y-2 text-sm text-gray-500 mb-6">
           <p>
             <span className="font-medium">ID:</span> {message.id}
@@ -56,9 +56,14 @@ const MessageDetailPage = () => {
             </p>
           )}
         </div>
-        <Link to="/" className="text-blue-600 hover:text-blue-800 font-medium">
-          Voltar
-        </Link>
+        <div className="flex justify-center">
+          <Link
+            to="/"
+            className="bg-brand-600 hover:bg-brand-700 text-white px-6 py-2 rounded-xl font-bold shadow-md transition-all text-base"
+          >
+            Voltar
+          </Link>
+        </div>
       </div>
     </div>
   );

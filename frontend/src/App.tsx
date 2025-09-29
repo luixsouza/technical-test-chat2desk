@@ -3,7 +3,6 @@ import LoginPageClean from "./pages/LoginPage";
 import MessagesListPage from "./pages/MessagesListPage";
 import MessageFormPage from "./pages/MessageFormPage";
 import MessageDetailPage from "./pages/MessageDetailPage";
-import "./App.css";
 
 function App() {
   const isAuthenticated = !!localStorage.getItem("authToken");

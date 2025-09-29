@@ -58,17 +58,27 @@ const MessageFormPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 py-8">
-      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-lg">
-        <h2 className="text-2xl font-bold mb-6 text-gray-800">
-          {isEditing ? "Editar Mensagem" : "Nova Mensagem"}
-        </h2>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-50 to-white py-8 px-4">
+      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-lg border border-gray-100">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-3xl font-extrabold text-gray-900">
+            {isEditing ? "Editar Mensagem" : "Nova Mensagem"}
+          </h2>
+          <button
+            onClick={() => navigate(-1)}
+            className="text-brand-700 hover:text-brand-900 font-bold"
+          >
+            Voltar
+          </button>
+        </div>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div>
-            <label className="block text-gray-700 mb-1">Título</label>
+            <label className="block text-gray-700 mb-1 font-semibold">
+              Título
+            </label>
             <input
               {...register("title")}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-400"
             />
             {errors.title && (
               <p className="text-red-500 text-sm mt-1">
@@ -77,10 +87,12 @@ const MessageFormPage = () => {
             )}
           </div>
           <div>
-            <label className="block text-gray-700 mb-1">Corpo</label>
+            <label className="block text-gray-700 mb-1 font-semibold">
+              Corpo
+            </label>
             <textarea
               {...register("body")}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-400"
               rows={4}
             />
             {errors.body && (
@@ -89,10 +101,12 @@ const MessageFormPage = () => {
           </div>
           {!isEditing && (
             <div>
-              <label className="block text-gray-700 mb-1">Autor</label>
+              <label className="block text-gray-700 mb-1 font-semibold">
+                Autor
+              </label>
               <input
                 {...register("author")}
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-400"
               />
               {errors.author && (
                 <p className="text-red-500 text-sm mt-1">
@@ -102,10 +116,12 @@ const MessageFormPage = () => {
             </div>
           )}
           <div>
-            <label className="block text-gray-700 mb-1">Status</label>
+            <label className="block text-gray-700 mb-1 font-semibold">
+              Status
+            </label>
             <input
               {...register("status")}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-400"
             />
             {errors.status && (
               <p className="text-red-500 text-sm mt-1">
@@ -119,7 +135,7 @@ const MessageFormPage = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold transition-colors"
+            className="w-full bg-brand-600 hover:bg-brand-700 text-white py-2 rounded-lg font-bold transition-colors"
           >
             {isSubmitting ? "Salvando..." : "Salvar"}
           </button>
