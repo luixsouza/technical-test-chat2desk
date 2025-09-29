@@ -1,6 +1,5 @@
 import axios from "axios";
 
-// Tipos básicos usados pelo frontend
 export interface Message {
   id: string;
   title: string;
@@ -12,11 +11,10 @@ export interface Message {
 }
 
 const api = axios.create({
-  baseURL: "http://localhost:5678/webhook",
+  baseURL:
+    (import.meta as any)?.env?.VITE_API_BASE || "http://localhost:5678/webhook",
 });
 
-// Alguns webhooks do n8n retornam objetos no formato { json: {...}, pairedItem: {...} }
-// Este helper "desembrulha" esse formato tanto para arrays quanto para objetos únicos
 const unwrapN8n = <T = unknown>(data: any): T | T[] => {
   if (Array.isArray(data)) {
     return data.map((item) =>
