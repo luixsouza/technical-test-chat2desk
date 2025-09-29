@@ -1,0 +1,222 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+    "name": "Chat2Desk Messages API (from n8n)",
+    "description": "Collection gerada a partir de um workflow do n8n para a API de Mensagens.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login and Get Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Script para salvar o accessToken automaticamente",
+                  "if (pm.response.code === 200) {",
+                  "    pm.collectionVariables.set(\"accessToken\", pm.response.json().accessToken);",
+                  "    console.log(\"Access Token salvo na variável de coleção.\");",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"candidate\",\n    \"password\": \"secret\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Autentica o usuário e salva o `accessToken` retornado em uma variável da collection para ser usado nas outras requisições."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Messages",
+      "item": [
+        {
+          "name": "Get All Messages",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/messages?status=published&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["messages"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "published",
+                  "description": "(Opcional: draft, published, archived)"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "(Opcional)"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "(Opcional)",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retorna uma lista de todas as mensagens. Requer autenticação."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Message",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Nova Mensagem via Postman\",\n    \"body\": \"Este é o corpo da mensagem que deve ter pelo menos 10 caracteres.\",\n    \"author\": \"Postman Test\",\n    \"status\": \"draft\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/messages",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "messages"]
+            },
+            "description": "**Observação:** O seu JSON do n8n define o path como `api/messages/:id` para o POST, o que é incomum. Uma API REST padrão usa `api/messages` para criar um novo recurso. Ajustei para seguir o padrão REST. Se precisar usar o path original, apenas adicione `/um-id-qualquer` ao final da URL."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Message by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/messages/{{messageId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "messages", "{{messageId}}"]
+            },
+            "description": "Busca uma mensagem específica pelo seu ID."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Message",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Título da Mensagem Atualizado\",\n    \"body\": \"Este é o novo corpo da mensagem, totalmente atualizado.\",\n    \"status\": \"published\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/messages/{{messageId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "messages", "{{messageId}}"]
+            },
+            "description": "Atualiza completamente uma mensagem existente. Todos os campos no corpo são necessários."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Message",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/messages/{{messageId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "messages", "{{messageId}}"]
+            },
+            "description": "Deleta uma mensagem específica pelo seu ID."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5678/webhook",
+      "type": "string",
+      "description": "URL base para os webhooks de produção do n8n."
+    },
+    {
+      "key": "accessToken",
+      "value": "seu_token_aqui",
+      "type": "string",
+      "description": "Esta variável é preenchida automaticamente após executar a requisição de Login."
+    },
+    {
+      "key": "messageId",
+      "value": "insira_um_id_valido_aqui",
+      "type": "string",
+      "description": "Substitua este valor por um ID de uma mensagem existente no seu banco de dados."
+    }
+  ]
+}

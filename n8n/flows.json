@@ -60,8 +60,8 @@
     {
       "parameters": {
         "httpMethod": "POST",
-        "path": "messages",
-        "responseMode": "lastNode",
+        "path": "api/messages/",
+        "responseMode": "responseNode",
         "options": {}
       },
       "id": "d5a75cee-97ff-4b16-afd1-e75e81ba2371",
@@ -112,7 +112,7 @@
     },
     {
       "parameters": {
-        "path": "messages/:id",
+        "path": "api/messages/:id",
         "responseMode": "lastNode",
         "options": {}
       },
@@ -131,7 +131,7 @@
           "conditions": [
             {
               "keyName": "id",
-              "keyValue": "=={{ $json[\"id\"] }}"
+              "keyValue": "={{ $json.params.id }}"
             }
           ]
         }
@@ -152,7 +152,7 @@
     {
       "parameters": {
         "httpMethod": "PUT",
-        "path": "messages/:id",
+        "path": "api/messages/:id",
         "responseMode": "lastNode",
         "options": {}
       },
@@ -166,7 +166,32 @@
     {
       "parameters": {
         "operation": "update",
-        "tableId": "messages"
+        "tableId": "messages",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $json.params.id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "title",
+              "fieldValue": "={{ $json.body.title }}"
+            },
+            {
+              "fieldId": "body",
+              "fieldValue": "={{ $json.body.body }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "={{ $json.body.status }}"
+            }
+          ]
+        }
       },
       "id": "9aadcb2d-ba19-4d88-b47c-28f67ce43a88",
       "name": "Supabase Update Message",
@@ -183,40 +208,8 @@
     },
     {
       "parameters": {
-        "httpMethod": "PATCH",
-        "path": "messages/:id",
-        "responseMode": "lastNode",
-        "options": {}
-      },
-      "id": "a77bd9d6-5bf1-4596-b3dd-9082bba9baa9",
-      "name": "Webhook PATCH Message",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 1,
-      "position": [-16, 1312],
-      "webhookId": "d0266a07-bc1f-4dbf-a934-0c8e79601bd9"
-    },
-    {
-      "parameters": {
-        "operation": "update",
-        "tableId": "messages"
-      },
-      "id": "8be7d02d-d115-4c54-87f0-21370f212b75",
-      "name": "Supabase Patch Message",
-      "type": "n8n-nodes-base.supabase",
-      "typeVersion": 1,
-      "position": [288, 1312],
-      "alwaysOutputData": true,
-      "credentials": {
-        "supabaseApi": {
-          "id": "5OXfzD0Bko6NlwnP",
-          "name": "SUPABASE_CREDENTIAL"
-        }
-      }
-    },
-    {
-      "parameters": {
         "httpMethod": "DELETE",
-        "path": "messages/:id",
+        "path": "api/messages/:id",
         "responseMode": "lastNode",
         "options": {}
       },
@@ -224,19 +217,28 @@
       "name": "Webhook DELETE Message",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
-      "position": [-16, 1520],
+      "position": [-16, 1312],
       "webhookId": "4517e62a-2edd-42db-8f73-3f5bc20f3773"
     },
     {
       "parameters": {
         "operation": "delete",
-        "tableId": "messages"
+        "tableId": "messages",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $json.params.id }}"
+            }
+          ]
+        }
       },
       "id": "157be38e-be42-4b1c-a5c1-cd918c795a35",
       "name": "Supabase Delete Message",
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
-      "position": [288, 1520],
+      "position": [288, 1312],
       "alwaysOutputData": true,
       "credentials": {
         "supabaseApi": {
@@ -309,17 +311,6 @@
         ]
       ]
     },
-    "Webhook PATCH Message": {
-      "main": [
-        [
-          {
-            "node": "Supabase Patch Message",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Webhook DELETE Message": {
       "main": [
         [
@@ -336,13 +327,16 @@
     },
     "Login Function (JWT)": {
       "main": [[]]
+    },
+    "Supabase Get by ID": {
+      "main": [[]]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "b1fe3b11-32c5-4243-9196-24cf0940a1c3",
+  "versionId": "b62c63c0-13b6-4b04-a386-263f3d3786b8",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "24d5320d6ebea0f766ddf505df90048fc45580e434d2c8eade301e547978084d"
