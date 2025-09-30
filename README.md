@@ -177,7 +177,27 @@ n8n/
 	flows.json
 collection/
 	postman-collection.json
+images/
+	sc1.png
+	sc2.png
+	sc3.png
 ```
+
+## Seção de fotos (evolução do desenvolvimento)
+
+Abaixo estão os principais screenshots em ordem cronológica do desenvolvimento:
+
+1. Tela de Login (Auth)
+
+![Tela de Login](images/sc1.png)
+
+2. Lista de Mensagens (CRUD integrado ao n8n)
+
+![Lista de Mensagens](images/sc2.png)
+
+3. Frontend - CRUD (fluxo completo)
+
+![Frontend](images/sc3.png)
 
 ## Notas técnicas do frontend
 
