@@ -18,7 +18,13 @@ Este guia cobre do zero: preparação de ambiente, variáveis `.env`, criação 
 
 ## Variáveis de ambiente (.env)
 
-Crie um arquivo `.env` na raiz do projeto (mesmo nível do `docker-compose.yml`). Exemplo funcional fornecido:
+**Configuração rápida:**
+
+1. Copie o arquivo de exemplo: `cp .env.example .env` (ou `copy .env.example .env` no Windows)
+2. Copie o arquivo do frontend: `cp frontend/.env.example frontend/.env`
+3. Edite o `.env` principal e substitua as variáveis `SUPABASE_*` pelas do seu projeto
+
+**Exemplo completo (.env na raiz do projeto):**
 
 ```
 # Configurações básicas do n8n
@@ -41,41 +47,63 @@ POSTGRES_PASSWORD=password
 # JWT para autenticação de API
 JWT_SECRET=9a2d8f6d7c1340b68f621aa2c3d49e41
 
-SUPABASE_URL=
-SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
+# Supabase (configure com seu projeto)
+SUPABASE_URL=sua_url_do_supabase
+SUPABASE_ANON_KEY=sua_anon_key_do_supabase
+SUPABASE_SERVICE_ROLE_KEY=sua_service_role_key_do_supabase
 ```
 
-Anotações:
+**Frontend (.env do frontend):**
 
-- SUPABASE_URL, SUPABASE_ANON_KEY e SUPABASE_SERVICE_ROLE_KEY devem vir do seu projeto no Supabase (Configurações > API).
-- O JWT_SECRET é usado no n8n para assinar tokens de autenticação simples do frontend.
-- O n8n usa N8N_ENCRYPTION_KEY para criptografar credenciais internas; mantenha-o fixo e seguro.
+Dentro da pasta `frontend`, crie um arquivo `.env` (ou copie de `frontend/.env.example`):
 
-Frontend (.env do frontend):
+```
+VITE_API_BASE=http://localhost:5678/webhook
+```
 
-- Dentro da pasta `frontend`, há uma variável de ambiente consumida pelo Vite:
-  - `VITE_API_BASE=http://localhost:5678/webhook`
-- Você pode configurar via `.env` dentro de `frontend/` ou via arquivo `.env.local`. O código já usa `import.meta.env.VITE_API_BASE` e faz fallback para `http://localhost:5678/webhook`.
+**Notas importantes:**
+
+- **Supabase**: Você deve criar seu próprio projeto no Supabase e substituir as variáveis `SUPABASE_*` pelas chaves do seu projeto.
+- **Schema necessário**: Importe o arquivo `db/schema.sql` no seu projeto Supabase após criá-lo.
+- **JWT_SECRET e N8N_ENCRYPTION_KEY**: Use os valores exatos fornecidos para garantir compatibilidade.
+- **Credenciais do n8n**: Login será `user` / `password` conforme especificado.
+
+**Como obter as chaves do Supabase:**
+
+1. Crie um projeto no Supabase (https://supabase.com)
+2. Vá em Settings > API
+3. Copie a Project URL para `SUPABASE_URL`
+4. Copie a `anon public` key para `SUPABASE_ANON_KEY`
+5. Copie a `service_role` key para `SUPABASE_SERVICE_ROLE_KEY`
 
 ## Banco de Dados (Supabase)
 
-1. Crie um projeto no Supabase e copie as chaves/URL (preencha no `.env`).
+**Configure seu próprio projeto Supabase:**
 
-2. Importe o schema SQL do projeto (tabela `messages` e trigger):
+1. **Crie um projeto no Supabase:**
 
-- Arquivo: `db/schema.sql`
-- No Supabase, vá em SQL Editor > cole o conteúdo do arquivo e execute.
+   - Acesse https://supabase.com e crie uma conta
+   - Crie um novo projeto
+   - Anote as credenciais (URL e chaves) em Settings > API
 
-Conteúdo do schema (resumo):
+2. **Importe o schema SQL:**
+
+   - Arquivo: `db/schema.sql`
+   - No Supabase, vá em SQL Editor
+   - Cole o conteúdo do arquivo e execute
+
+3. **Configure o .env:**
+   - Substitua as variáveis `SUPABASE_*` no arquivo `.env` pelas do seu projeto
+
+**Conteúdo do schema (resumo):**
 
 - Tabela `messages` com colunas: id (uuid), title, body, author, status, created_at, updated_at
 - Trigger para atualizar automaticamente o `updated_at` em updates
 
-Observação: O script usa `gen_random_uuid()`. Em alguns ambientes é necessário habilitar a extensão `pgcrypto` ou `uuid-ossp`. No Supabase, `gen_random_uuid()` costuma estar disponível. Se necessário, rode antes:
+**Observação:** O script usa `gen_random_uuid()`. No Supabase, essa função já está disponível. Se usar outro Postgres, pode ser necessário habilitar a extensão:
 
-```
--- se precisar
+```sql
+-- se precisar (apenas em outros ambientes Postgres)
 create extension if not exists pgcrypto;
 ```
 
@@ -160,9 +188,11 @@ VITE_API_BASE=http://localhost:5678/webhook
 ```
 docker-compose.yml
 README.md
+.env.example
 db/
 	schema.sql
 frontend/
+	.env.example
 	Dockerfile
 	nginx.conf
 	package.json
