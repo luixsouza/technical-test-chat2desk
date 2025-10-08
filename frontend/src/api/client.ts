@@ -8,6 +8,7 @@ export interface Message {
   status: string;
   created_at?: string;
   updated_at?: string;
+  description?: string;
 }
 
 const api = axios.create({

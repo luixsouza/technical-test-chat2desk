@@ -108,6 +108,10 @@ const MessagesListPage = () => {
                   <p>
                     <span className="font-semibold">Autor:</span> {msg.author}
                   </p>
+                  <p>
+                    <span className="font-semibold">Description:</span>{" "}
+                    {msg.description}
+                  </p>
                   {msg.created_at && (
                     <p>
                       <span className="font-semibold">Criado:</span>{" "}
